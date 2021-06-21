@@ -12,103 +12,51 @@ class RecipeListPage extends StatelessWidget {
     return //SafeArea(
         // child: Padding(
         //     padding: const EdgeInsets.all(8.0),
-       //    child:
-          Column(
-              children: [
-                //CommandBar(),
-                Container(
-                  color: Colors.grey,
-                  child: ButtonBar(
-                    buttonPadding: EdgeInsets.fromLTRB(30, 0, 40, 0),
-                    children: [
-                      TextButton.icon(
-                        onPressed: () {
-                          //TODO
-                        },
-                        label: Text('Add'),
-                        icon: Icon(Icons.add),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {
-                          //TODO
-                        },
-                        label: Text('Export'),
-                        icon: Icon(Icons.import_export),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {
-                          //TODO
-                        },
-                        label: Text('Import'),
-                        icon: Icon(Icons.import_export),
-                      )
-                    ],
-                  ),
-                ),
-                ListView.separated(
-                  shrinkWrap: true,
-                    separatorBuilder: (context, index) => Divider(),
-                    itemCount: recipes.length,
-                    itemBuilder: (context, index) =>
-                        RecipeTile(recipes[index])),
-
-                // Positioned(
-                //     bottom: 20,
-                //     right: 20,
-                //     child: FloatingActionButton(
-                //       child: Icon(Icons.add),
-                //       onPressed: () {
-                //         //TODO openNewPage()
-                //       },
-                //     ))
-              ],
-            )
-    //))
-     ;
-  }
-}
-
-class CommandBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Container(
-        height: 20,
-        child: FractionallySizedBox(
-          widthFactor: 1,
-          child: OverflowView.flexible(
-            direction: Axis.horizontal,
-            spacing: 4,
+        //    child:
+        Column(
+      children: [
+        //CommandBar(),
+        Container(
+          color: Theme.of(context).dialogBackgroundColor,
+          height: 50,
+          child: ButtonBar(
             children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  //TODO
-                },
+              TextButton.icon(
                 label: Text('Add'),
                 icon: Icon(Icons.add),
-              ),
-              ElevatedButton.icon(
                 onPressed: () {
                   //TODO
                 },
+              ),
+              SizedBox(width: 20,),
+              TextButton.icon(
                 label: Text('Export'),
                 icon: Icon(Icons.import_export),
-              ),
-              ElevatedButton.icon(
                 onPressed: () {
                   //TODO
                 },
+              ),
+              SizedBox(width: 20,),
+              TextButton.icon(
                 label: Text('Import'),
                 icon: Icon(Icons.import_export),
+                onPressed: () {
+                  //TODO
+                },
               )
             ],
-            builder: (context, remaining) => IconButton(
-              onPressed: () {
-                //TODO
-              },
-              icon: Icon(Icons.more_vert),
-            ),
           ),
         ),
-      );
+        ListView.separated(
+            shrinkWrap: true,//TODO without: gives RenderBox was not laid out    with: does not work with many item lists (scrolling)
+            separatorBuilder: (context, index) => Divider(),
+            itemCount: recipes.length,
+            itemBuilder: (context, index) => RecipeTile(recipes[index])),
+
+
+      ],
+    );
+  }
 }
 
 class RecipeTile extends StatelessWidget {
@@ -119,7 +67,7 @@ class RecipeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPressStart: (location) {
+      onTapDown: (location) {
         showMenu(
           position: RelativeRect.fromLTRB(
               location.localPosition.dx, location.globalPosition.dy, 100, 100),
