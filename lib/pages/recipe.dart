@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_bbq/domain/heater_meter.dart';
 import 'package:my_bbq/domain/recipe.dart';
-import 'package:overflow_view/overflow_view.dart';
+import 'package:my_bbq/widgets/toolbar.dart';
 import 'package:provider/provider.dart';
 
 class RecipeListPage extends StatelessWidget {
@@ -16,48 +16,19 @@ class RecipeListPage extends StatelessWidget {
         Column(
       children: [
         //CommandBar(),
-        Container(
-          color: Theme.of(context).dialogBackgroundColor,
-          height: 50,
-          child: ButtonBar(
-            children: [
-              TextButton.icon(
-                label: Text('Add'),
-                icon: Icon(Icons.add),
-                onPressed: () {
-                  //TODO
-                },
-              ),
-              SizedBox(width: 20,),
-              TextButton.icon(
-                label: Text('Export'),
-                icon: Icon(Icons.import_export),
-                onPressed: () {
-                  //TODO
-                },
-              ),
-              SizedBox(width: 20,),
-              TextButton.icon(
-                label: Text('Import'),
-                icon: Icon(Icons.import_export),
-                onPressed: () {
-                  //TODO
-                },
-              )
-            ],
-          ),
-        ),
+        Toolbar(),
         ListView.separated(
-            shrinkWrap: true,//TODO without: gives RenderBox was not laid out    with: does not work with many item lists (scrolling)
+            shrinkWrap: true,
+            //TODO without: gives RenderBox was not laid out    with: does not work with many item lists (scrolling)
             separatorBuilder: (context, index) => Divider(),
             itemCount: recipes.length,
             itemBuilder: (context, index) => RecipeTile(recipes[index])),
-
-
       ],
     );
   }
 }
+
+
 
 class RecipeTile extends StatelessWidget {
   final Recipe recipe;

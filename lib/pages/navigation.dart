@@ -1,6 +1,6 @@
 
 import 'package:flutter/widgets.dart';
-import 'package:my_bbq/page/recipe.dart';
+import 'package:my_bbq/pages/recipe.dart';
 import 'package:provider/provider.dart';
 
 class Navigation extends ChangeNotifier {

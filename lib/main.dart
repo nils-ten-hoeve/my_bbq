@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_bbq/page/connect.dart';
-import 'package:my_bbq/page/navigation.dart';
-import 'package:my_bbq/page/recipe.dart';
+import 'package:my_bbq/pages/connect.dart';
+import 'package:my_bbq/pages/navigation.dart';
+import 'package:my_bbq/pages/recipe.dart';
 import 'package:provider/provider.dart';
 
 import 'domain/heater_meter.dart';
