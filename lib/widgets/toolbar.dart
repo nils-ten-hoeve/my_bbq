@@ -1,81 +1,196 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:overflow_view/overflow_view.dart';
 
 import 'command.dart';
 
+///Wrap in [IntrinsicWidth] for full width
 class Toolbar extends StatelessWidget {
+  final List<Command> commands;
+
+  Toolbar(this.commands);
+
   @override
   Widget build(BuildContext context) {
     Color backGroundColor = Theme.of(context).dialogBackgroundColor;
 
-    List<Command> commands = [
-      Command(
-          name: 'Add',
-          icon: Icons.add,
-          action: () {
-            //TODO
-          }),
-      Command(
-          name: 'Export',
-          icon: Icons.import_export,
-          action: () {
-            //TODO
-          }),
-      Command(
-          name: 'import',
-          icon: Icons.import_export,
-          action: () {
-            //TODO
-          })
-    ];
-
     List<Command> visibleCommands =
         commands.where((command) => command.visible).toList();
     return Visibility(
-      visible: visibleCommands.isNotEmpty,
-      child: Container(
-        color: backGroundColor,
-        height: 50,
-        child: ButtonBar(
-          children: [
-            ...visibleCommands.map((action) => ToolbarButton(action)).toList()
-          ],
-        ),
-      ),
+        visible: visibleCommands.isNotEmpty,
+        child: Container(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            color: backGroundColor,
+            height: 50,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: OverflowView.flexible(
+                  spacing: 20,
+                  children: [
+                    ...visibleCommands
+                        .map((command) => CommandToolbarButton(command))
+                        .toList()
+                  ],
+                  builder: (context, remaining) {
+                    return Material(
+                      //TODO use something that is styled like CommandToolbarButton
+                      child: InkWell(
+                        child: Icon(Icons.more_horiz),
+                        onTap: () {
+                          //TODO position
+                          CommandPopupMenu(
+                              context,
+                              RelativeRect.fromLTRB(10, 10, 10, 10),
+                              visibleCommands
+                                  .skip(visibleCommands.length - remaining)
+                                  .toList());
+                        },
+                      ),
+                    );
+                    // visibleCommands
+                    //     .skip(visibleCommands.length - remaining)
+                    //     .map((command) => CommandPopupMenuItem(command))
+                    //     .toList();
+
+                    // return PopupMenuButton<Command>(
+                    //   icon: Icon(Icons.more_vert),
+                    //   itemBuilder: (context) {
+                    //     return visibleCommands
+                    //         .skip(visibleCommands.length - remaining)
+                    //         .map((command) => CommandPopupMenuItem(command))
+                    //         .toList();
+                    //   },
+                    // );
+                  }),
+            )));
+  }
+}
+
+final iconPlaceholder = Icon(
+  Icons.adjust,
+  color: Colors.transparent,
+);
+
+Icon? createCommandIcon(Command command, Color foreGroundColor,
+    {bool isIconPlaceholder = false}) {
+  IconData? icon = command.icon;
+  if (icon == null) {
+    if (isIconPlaceholder) {
+      return iconPlaceholder;
+    } else {
+      return null;
+    }
+  } else {
+    return Icon(
+      command.icon,
+      color: foreGroundColor,
     );
   }
 }
 
-class ToolbarButton extends StatelessWidget {
+class CommandIconAndText extends StatelessWidget {
   final Command command;
 
-  ToolbarButton(this.command);
+  CommandIconAndText(this.command);
 
   @override
   Widget build(BuildContext context) {
     Color foreGroundColor = Theme.of(context).textTheme.bodyText1!.color!;
-    IconData? icon = command.icon;
+    return Row(children: [
+      createCommandIcon(command, foreGroundColor, isIconPlaceholder: true)!,
+      SizedBox(
+        width: 20,
+      ),
+      Text(command.name, style: TextStyle(color: foreGroundColor))
+    ]);
+  }
+}
+
+//TODO create PopupMenu that calls Command.action()
+
+//TODO add optional title to popup menu
+
+//TODO create PopupMenu button that looks same as CommandToolbarButton (square white inkwell with same padding)
+
+class CommandPopupMenu {
+  final List<Command> commands;
+
+  CommandPopupMenu(
+    BuildContext context,
+    RelativeRect position,
+    this.commands,
+  ) {
+    List<Command> visibleCommands =
+        commands.where((command) => command.visible).toList();
+    showMenu<Command>(
+            context: context,
+            position: position,
+            items: visibleCommands
+                .map((command) => CommandPopupMenuItem(command))
+                .toList())
+        .then((command) => command!.action());
+  }
+}
+
+//TODO CommandPopupMenuItem seems wider than needed
+class CommandPopupMenuItem extends PopupMenuItem<Command> {
+  CommandPopupMenuItem(Command command)
+      : super(value: command, child: CommandIconAndText(command));
+}
+
+class CommandToolbarButton extends StatelessWidget {
+  final Command command;
+
+  CommandToolbarButton(this.command);
+
+  @override
+  Widget build(BuildContext context) {
+    Color foreGroundColor = Theme.of(context).textTheme.bodyText1!.color!;
+
+    Icon? icon = createCommandIcon(command, foreGroundColor);
     if (icon == null) {
-      return TextButton(
-        child: Text(
-          command.name,
-          style: TextStyle(color: foreGroundColor),
+      return ConstrainedBox(
+        constraints: BoxConstraints(
+            minHeight:50,
         ),
-        onPressed: () {
-          command.action();
-        },
+        child: TextButton(
+          child: Text(
+            command.name,
+          ),
+          style: TextButton.styleFrom(
+              padding: EdgeInsets.all(20),
+              primary: foreGroundColor,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)))),
+          onPressed: () {
+            command.action();
+          },
+        ),
       );
     } else {
-      return TextButton.icon(
-        label: Text(
-          command.name,
-          style: TextStyle(color: foreGroundColor),
+      return ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight:50,
         ),
-        icon: Icon(icon, color: foreGroundColor),
-        onPressed: () {
-          //TODO
-        },
+        child: TextButton.icon(
+          style: TextButton.styleFrom(
+              primary: foreGroundColor,
+              padding: EdgeInsets.all(20),
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)))),
+          label: Text(
+            command.name,
+          ),
+          icon: icon,
+          onPressed: () {
+            command.action();
+          },
+        ),
       );
     }
   }
 }
+
+//TODO split up in command, command_toolbar and command_popup_menu
+
+//TODO test light theme

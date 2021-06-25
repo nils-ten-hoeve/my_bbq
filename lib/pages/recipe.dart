@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_bbq/domain/heater_meter.dart';
 import 'package:my_bbq/domain/recipe.dart';
+import 'package:my_bbq/widgets/command.dart';
 import 'package:my_bbq/widgets/toolbar.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,48 @@ class RecipeListPage extends StatelessWidget {
         Column(
       children: [
         //CommandBar(),
-        Toolbar(),
+        Toolbar(  [
+          Command(
+              name: 'Add',
+              icon: Icons.add,
+              action: () {
+                //TODO
+
+                //TODO remove this test
+                CommandPopupMenu(context,RelativeRect.fromLTRB(10, 10, 10, 10), [Command(
+                    name: 'Export2',
+                    icon: Icons.import_export,
+                    action: () {
+                      //TODO
+                    }),
+                  Command(
+                      name: 'import2',
+                      icon: Icons.import_export,
+                      action: () {
+                        //TODO
+                      }),]);
+              }),
+          Command(
+              name: 'Export',
+              icon: Icons.import_export,
+              action: () {
+                //TODO
+              }),
+          Command(
+              name: 'import',
+              icon: Icons.import_export,
+              action: () {
+                //TODO
+              }),
+          for (int i = 0; i <= 10; i++)
+            Command(
+                name: 'Longer text $i',
+                icon: (i % 2 != 0) ? null : Icons.add,
+                //visible: (i % 3 != 0),
+                action: () {
+                  //TODO
+                }),
+        ]),
         ListView.separated(
             shrinkWrap: true,
             //TODO without: gives RenderBox was not laid out    with: does not work with many item lists (scrolling)
