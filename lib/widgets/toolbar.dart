@@ -38,6 +38,7 @@ class CommandToolbar extends StatelessWidget {
 class CommandToolBarMoreButton extends StatelessWidget {
   final List<Command> visibleCommands;
   final int remaining;
+  final buttonKey = GlobalKey();
 
   CommandToolBarMoreButton(this.visibleCommands, this.remaining);
 
@@ -46,6 +47,7 @@ class CommandToolBarMoreButton extends StatelessWidget {
     Color foreGroundColor = Theme.of(context).textTheme.bodyText1!.color!;
 
     return TextButton(
+      key: buttonKey,
       style: TextButton.styleFrom(
           padding: EdgeInsets.all(20),
           primary: foreGroundColor,
@@ -53,12 +55,30 @@ class CommandToolBarMoreButton extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(20)))),
       child: Icon(Icons.more_horiz),
       onPressed: () {
-        Size size = MediaQuery.of(context).size;
-        print(size.width);
-        CommandPopupMenu(context,
-            visibleCommands.skip(visibleCommands.length - remaining).toList());
+        CommandPopupMenu(
+          context,
+          visibleCommands.skip(visibleCommands.length - remaining).toList(),
+          position: calculatePopUpMenuPosition(),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20.0),
+                  bottomRight: Radius.circular(20.0))),
+        );
       },
     );
+  }
+
+  RelativeRect? calculatePopUpMenuPosition() {
+    var buttonKeyContext = buttonKey.currentContext;
+    if (buttonKeyContext != null) {
+      final RenderBox box = buttonKeyContext.findRenderObject() as RenderBox;
+      Offset buttonPosition = box.localToGlobal(Offset.zero);
+      Size buttonSize = box.size;
+      Size screenSize = MediaQuery.of(buttonKeyContext).size;
+      return RelativeRect.fromLTRB(screenSize.width,
+          buttonPosition.dy + buttonSize.height+2, 0, screenSize.height);
+    }
+    return null;
   }
 }
 
@@ -105,16 +125,29 @@ class CommandIconAndText extends StatelessWidget {
 class CommandPopupMenu {
   final List<Command> commands;
 
-  CommandPopupMenu(BuildContext context, this.commands,
-      {RelativeRect? position}) {
+  CommandPopupMenu(
+    BuildContext context,
+    this.commands, {
+    Command? selectedCommand,
+    RelativeRect? position,
+    double? elevation,
+    ShapeBorder? shape,
+    Color? color,
+    bool useRootNavigator = false,
+  }) {
     if (position == null) {
       position = positionInMiddleOfScreen(context);
     }
     List<Command> visibleCommands =
         commands.where((command) => command.visible).toList();
+
     showMenu<Command>(
             context: context,
             position: position,
+            initialValue: selectedCommand,
+            elevation: elevation,
+            color: color,
+            shape: (shape == null) ? createDefaultShape() : shape,
             items: visibleCommands
                 .map((command) => CommandPopupMenuItem(command))
                 .toList())
@@ -127,6 +160,9 @@ class CommandPopupMenu {
     return RelativeRect.fromLTRB(
         (screenWidth - assumedPopUpWidth) / 2, 100, screenWidth, 100);
   }
+
+  ShapeBorder createDefaultShape() => RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20.0)));
 }
 
 class CommandPopupMenuItem extends PopupMenuItem<Command> {
