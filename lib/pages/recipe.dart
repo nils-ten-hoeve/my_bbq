@@ -168,6 +168,7 @@ class ConformDeletionDialog extends StatelessWidget {
     return AlertDialog(
       title: Text("Delete"),
       content: Text("Are you sure you want to delete:\n${recipe.name}?"),
+      shape: roundedShape,
       actions: [
         cancelButton,
         deleteButton,
