@@ -76,7 +76,7 @@ class CommandToolBarMoreButton extends StatelessWidget {
       Size buttonSize = box.size;
       Size screenSize = MediaQuery.of(buttonKeyContext).size;
       return RelativeRect.fromLTRB(screenSize.width,
-          buttonPosition.dy + buttonSize.height+2, 0, screenSize.height);
+          buttonPosition.dy + buttonSize.height + 2, 0, screenSize.height);
     }
     return null;
   }
@@ -128,6 +128,7 @@ class CommandPopupMenu {
   CommandPopupMenu(
     BuildContext context,
     this.commands, {
+    String? title,
     Command? selectedCommand,
     RelativeRect? position,
     double? elevation,
@@ -138,20 +139,21 @@ class CommandPopupMenu {
     if (position == null) {
       position = positionInMiddleOfScreen(context);
     }
+
     List<Command> visibleCommands =
         commands.where((command) => command.visible).toList();
 
-    showMenu<Command>(
-            context: context,
-            position: position,
-            initialValue: selectedCommand,
-            elevation: elevation,
-            color: color,
-            shape: (shape == null) ? createDefaultShape() : shape,
-            items: visibleCommands
-                .map((command) => CommandPopupMenuItem(command))
-                .toList())
-        .then((command) => command!.action());
+    if (visibleCommands.isNotEmpty) {
+      showMenu<Command>(
+              context: context,
+              position: position,
+              initialValue: selectedCommand,
+              elevation: elevation,
+              color: color,
+              shape: (shape == null) ? createDefaultShape() : shape,
+              items: createItems(context, title, visibleCommands))
+          .then((command) => command!.action());
+    }
   }
 
   RelativeRect positionInMiddleOfScreen(BuildContext context) {
@@ -163,6 +165,23 @@ class CommandPopupMenu {
 
   ShapeBorder createDefaultShape() => RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(20.0)));
+
+  List<PopupMenuItem<Command>> createItems(
+      BuildContext context, String? title, List<Command> visibleCommands) {
+    return [
+      if (title != null && title.isNotEmpty) createTitle(context, title),
+      ...visibleCommands
+          .map((command) => CommandPopupMenuItem(command))
+          .toList()
+    ];
+  }
+
+  PopupMenuItem<Command> createTitle(BuildContext context, String title) =>
+      PopupMenuItem(
+        child: Text(title),
+        enabled: false,
+        textStyle: Theme.of(context).textTheme.headline6,
+      );
 }
 
 class CommandPopupMenuItem extends PopupMenuItem<Command> {
