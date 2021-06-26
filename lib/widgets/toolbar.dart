@@ -4,7 +4,6 @@ import 'package:overflow_view/overflow_view.dart';
 
 import 'command.dart';
 
-//TODO CommandToolbar control it using the keyboard (tab, space, etc)
 class CommandToolbar extends StatelessWidget {
   final List<Command> commands;
 
@@ -26,11 +25,9 @@ class CommandToolbar extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: OverflowView.flexible(
                   spacing: 20,
-                  children: [
-                    ...visibleCommands
-                        .map((command) => CommandToolbarButton(command))
-                        .toList()
-                  ],
+                  children: visibleCommands
+                      .map((command) => CommandToolbarButton(command))
+                      .toList(),
                   builder: (context, remaining) {
                     return CommandToolBarMoreButton(visibleCommands, remaining);
                   }),
@@ -38,7 +35,6 @@ class CommandToolbar extends StatelessWidget {
   }
 }
 
-//TODO Make popup menu appear underneath the button
 class CommandToolBarMoreButton extends StatelessWidget {
   final List<Command> visibleCommands;
   final int remaining;
@@ -57,8 +53,9 @@ class CommandToolBarMoreButton extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(20)))),
       child: Icon(Icons.more_horiz),
       onPressed: () {
-        //TODO position
-        CommandPopupMenu(context, RelativeRect.fromLTRB(10, 10, 10, 10),
+        Size size = MediaQuery.of(context).size;
+        print(size.width);
+        CommandPopupMenu(context,
             visibleCommands.skip(visibleCommands.length - remaining).toList());
       },
     );
@@ -98,25 +95,21 @@ class CommandIconAndText extends StatelessWidget {
     return Row(children: [
       createCommandIcon(command, foreGroundColor, isIconPlaceholder: true)!,
       SizedBox(
-        width: 20,
+        width: 10,
       ),
       Text(command.name, style: TextStyle(color: foreGroundColor))
     ]);
   }
 }
 
-//TODO CommandPopupMenu add optional title
-
-//TODO CommandPopupMenu make it rounded
-
 class CommandPopupMenu {
   final List<Command> commands;
 
-  CommandPopupMenu(
-    BuildContext context,
-    RelativeRect position,
-    this.commands,
-  ) {
+  CommandPopupMenu(BuildContext context, this.commands,
+      {RelativeRect? position}) {
+    if (position == null) {
+      position = positionInMiddleOfScreen(context);
+    }
     List<Command> visibleCommands =
         commands.where((command) => command.visible).toList();
     showMenu<Command>(
@@ -127,9 +120,15 @@ class CommandPopupMenu {
                 .toList())
         .then((command) => command!.action());
   }
+
+  RelativeRect positionInMiddleOfScreen(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double assumedPopUpWidth = 220;
+    return RelativeRect.fromLTRB(
+        (screenWidth - assumedPopUpWidth) / 2, 100, screenWidth, 100);
+  }
 }
 
-//TODO CommandPopupMenuItem seems wider than needed
 class CommandPopupMenuItem extends PopupMenuItem<Command> {
   CommandPopupMenuItem(Command command)
       : super(value: command, child: CommandIconAndText(command));
@@ -187,7 +186,3 @@ class CommandToolbarButton extends StatelessWidget {
     }
   }
 }
-
-//TODO split up in command, command_toolbar and command_popup_menu
-
-//TODO test light theme

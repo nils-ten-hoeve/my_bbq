@@ -22,10 +22,8 @@ class RecipeListPage extends StatelessWidget {
               name: 'Add',
               icon: Icons.add,
               action: () {
-                //TODO
-
                 //TODO remove this test
-                CommandPopupMenu(context,RelativeRect.fromLTRB(10, 10, 10, 10), [Command(
+                CommandPopupMenu(context,[Command(
                     name: 'Export2',
                     icon: Icons.import_export,
                     action: () {
@@ -50,6 +48,7 @@ class RecipeListPage extends StatelessWidget {
               action: () {
                 //TODO
               }),
+          //TODO remove after testing
           for (int i = 0; i <= 10; i++)
             Command(
                 name: 'Longer text $i',
@@ -82,6 +81,7 @@ class RecipeTile extends StatelessWidget {
     return GestureDetector(
       onTapDown: (location) {
         showMenu(
+          //TODO RecipeTile: use CommandPopUpMenu
           position: RelativeRect.fromLTRB(
               location.localPosition.dx, location.globalPosition.dy, 100, 100),
           context: context,
