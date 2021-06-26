@@ -4,11 +4,11 @@ import 'package:overflow_view/overflow_view.dart';
 
 import 'command.dart';
 
-///Wrap in [IntrinsicWidth] for full width
-class Toolbar extends StatelessWidget {
+//TODO CommandToolbar control it using the keyboard (tab, space, etc)
+class CommandToolbar extends StatelessWidget {
   final List<Command> commands;
 
-  Toolbar(this.commands);
+  CommandToolbar(this.commands);
 
   @override
   Widget build(BuildContext context) {
@@ -32,37 +32,36 @@ class Toolbar extends StatelessWidget {
                         .toList()
                   ],
                   builder: (context, remaining) {
-                    return Material(
-                      //TODO use something that is styled like CommandToolbarButton
-                      child: InkWell(
-                        child: Icon(Icons.more_horiz),
-                        onTap: () {
-                          //TODO position
-                          CommandPopupMenu(
-                              context,
-                              RelativeRect.fromLTRB(10, 10, 10, 10),
-                              visibleCommands
-                                  .skip(visibleCommands.length - remaining)
-                                  .toList());
-                        },
-                      ),
-                    );
-                    // visibleCommands
-                    //     .skip(visibleCommands.length - remaining)
-                    //     .map((command) => CommandPopupMenuItem(command))
-                    //     .toList();
-
-                    // return PopupMenuButton<Command>(
-                    //   icon: Icon(Icons.more_vert),
-                    //   itemBuilder: (context) {
-                    //     return visibleCommands
-                    //         .skip(visibleCommands.length - remaining)
-                    //         .map((command) => CommandPopupMenuItem(command))
-                    //         .toList();
-                    //   },
-                    // );
+                    return CommandToolBarMoreButton(visibleCommands, remaining);
                   }),
             )));
+  }
+}
+
+//TODO Make popup menu appear underneath the button
+class CommandToolBarMoreButton extends StatelessWidget {
+  final List<Command> visibleCommands;
+  final int remaining;
+
+  CommandToolBarMoreButton(this.visibleCommands, this.remaining);
+
+  @override
+  Widget build(BuildContext context) {
+    Color foreGroundColor = Theme.of(context).textTheme.bodyText1!.color!;
+
+    return TextButton(
+      style: TextButton.styleFrom(
+          padding: EdgeInsets.all(20),
+          primary: foreGroundColor,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)))),
+      child: Icon(Icons.more_horiz),
+      onPressed: () {
+        //TODO position
+        CommandPopupMenu(context, RelativeRect.fromLTRB(10, 10, 10, 10),
+            visibleCommands.skip(visibleCommands.length - remaining).toList());
+      },
+    );
   }
 }
 
@@ -106,11 +105,9 @@ class CommandIconAndText extends StatelessWidget {
   }
 }
 
-//TODO create PopupMenu that calls Command.action()
+//TODO CommandPopupMenu add optional title
 
-//TODO add optional title to popup menu
-
-//TODO create PopupMenu button that looks same as CommandToolbarButton (square white inkwell with same padding)
+//TODO CommandPopupMenu make it rounded
 
 class CommandPopupMenu {
   final List<Command> commands;
@@ -151,7 +148,7 @@ class CommandToolbarButton extends StatelessWidget {
     if (icon == null) {
       return ConstrainedBox(
         constraints: BoxConstraints(
-            minHeight:50,
+          minHeight: 50,
         ),
         child: TextButton(
           child: Text(
@@ -170,7 +167,7 @@ class CommandToolbarButton extends StatelessWidget {
     } else {
       return ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight:50,
+          minHeight: 50,
         ),
         child: TextButton.icon(
           style: TextButton.styleFrom(

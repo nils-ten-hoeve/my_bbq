@@ -17,7 +17,7 @@ class RecipeListPage extends StatelessWidget {
         Column(
       children: [
         //CommandBar(),
-        Toolbar(  [
+        CommandToolbar(  [
           Command(
               name: 'Add',
               icon: Icons.add,
