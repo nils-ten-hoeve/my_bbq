@@ -16,13 +16,13 @@ class Command {
         _visibleFunction = booleanFunction(visible);
 
   Command.dynamic({
-    required String Function() nameFunction,
-    required IconData? Function() iconFunction,
-    required bool Function() visibleFunction,
+    required String Function() name,
+    required IconData? Function() icon,
+    required bool Function() visible,
     required this.action,
-  })  : _nameFunction = nameFunction,
-        _iconFunction = iconFunction,
-        _visibleFunction = visibleFunction;
+  })  : _nameFunction = name,
+        _iconFunction = icon,
+        _visibleFunction = visible;
 
   static String Function() stringFunction(String value) => () => value;
 

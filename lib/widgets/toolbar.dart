@@ -4,6 +4,10 @@ import 'package:overflow_view/overflow_view.dart';
 
 import 'command.dart';
 
+const itemHeight=50.0;
+const spacing=20.0;
+const rounding=20.0;
+
 class CommandToolbar extends StatelessWidget {
   final List<Command> commands;
 
@@ -18,13 +22,13 @@ class CommandToolbar extends StatelessWidget {
     return Visibility(
         visible: visibleCommands.isNotEmpty,
         child: Container(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            padding: EdgeInsets.fromLTRB(spacing, 0, spacing, 0),
             color: backGroundColor,
-            height: 50,
+            height: itemHeight,
             child: Align(
               alignment: Alignment.centerRight,
               child: OverflowView.flexible(
-                  spacing: 20,
+                  spacing: spacing,
                   children: visibleCommands
                       .map((command) => CommandToolbarButton(command))
                       .toList(),
@@ -46,25 +50,28 @@ class CommandToolBarMoreButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Color foreGroundColor = Theme.of(context).textTheme.bodyText1!.color!;
 
-    return TextButton(
-      key: buttonKey,
-      style: TextButton.styleFrom(
-          padding: EdgeInsets.all(20),
-          primary: foreGroundColor,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20)))),
-      child: Icon(Icons.more_horiz),
-      onPressed: () {
-        CommandPopupMenu(
-          context,
-          visibleCommands.skip(visibleCommands.length - remaining).toList(),
-          position: calculatePopUpMenuPosition(),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20.0),
-                  bottomRight: Radius.circular(20.0))),
-        );
-      },
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minHeight: itemHeight
+      ),
+      child: TextButton(
+        key: buttonKey,
+        style: TextButton.styleFrom(
+            primary: foreGroundColor,
+            shape: roundedShape),
+        child: Icon(Icons.more_horiz),
+        onPressed: () {
+          CommandPopupMenu(
+            context,
+            visibleCommands.skip(visibleCommands.length - remaining).toList(),
+            position: calculatePopUpMenuPosition(),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(rounding),
+                    bottomRight: Radius.circular(rounding))),
+          );
+        },
+      ),
     );
   }
 
@@ -150,7 +157,7 @@ class CommandPopupMenu {
               initialValue: selectedCommand,
               elevation: elevation,
               color: color,
-              shape: (shape == null) ? createDefaultShape() : shape,
+              shape: (shape == null) ? roundedShape : shape,
               items: createItems(context, title, visibleCommands))
           .then((command) => command!.action());
     }
@@ -162,9 +169,6 @@ class CommandPopupMenu {
     return RelativeRect.fromLTRB(
         (screenWidth - assumedPopUpWidth) / 2, 100, screenWidth, 100);
   }
-
-  ShapeBorder createDefaultShape() => RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(20.0)));
 
   List<PopupMenuItem<Command>> createItems(
       BuildContext context, String? title, List<Command> visibleCommands) {
@@ -202,7 +206,7 @@ class CommandToolbarButton extends StatelessWidget {
     if (icon == null) {
       return ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: 50,
+          minHeight: itemHeight,
         ),
         child: TextButton(
           child: Text(
@@ -211,24 +215,22 @@ class CommandToolbarButton extends StatelessWidget {
           style: TextButton.styleFrom(
               padding: EdgeInsets.all(20),
               primary: foreGroundColor,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20)))),
+              shape: roundedShape),
           onPressed: () {
             command.action();
           },
         ),
       );
     } else {
+      final buttonStyle = TextButton.styleFrom(primary: foreGroundColor,
+          padding: EdgeInsets.all(20),
+          shape: roundedShape);
       return ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: 50,
+          minHeight: itemHeight,
         ),
         child: TextButton.icon(
-          style: TextButton.styleFrom(
-              primary: foreGroundColor,
-              padding: EdgeInsets.all(20),
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20)))),
+          style: buttonStyle,
           label: Text(
             command.name,
           ),
@@ -241,3 +243,7 @@ class CommandToolbarButton extends StatelessWidget {
     }
   }
 }
+
+
+const roundedShape=RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(rounding)));

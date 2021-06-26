@@ -17,24 +17,12 @@ class RecipeListPage extends StatelessWidget {
         Column(
       children: [
         //CommandBar(),
-        CommandToolbar(  [
+        CommandToolbar([
           Command(
               name: 'Add',
               icon: Icons.add,
               action: () {
-                //TODO remove this test
-                CommandPopupMenu(context,[Command(
-                    name: 'Export2',
-                    icon: Icons.import_export,
-                    action: () {
-                      //TODO
-                    }),
-                  Command(
-                      name: 'import2',
-                      icon: Icons.import_export,
-                      action: () {
-                        //TODO
-                      }),]);
+                //TODO
               }),
           Command(
               name: 'Export',
@@ -63,114 +51,95 @@ class RecipeListPage extends StatelessWidget {
             //TODO without: gives RenderBox was not laid out    with: does not work with many item lists (scrolling)
             separatorBuilder: (context, index) => Divider(),
             itemCount: recipes.length,
-            itemBuilder: (context, index) => RecipeTile(recipes[index])),
+            itemBuilder: (context, index) => RecipeTile(recipes[index],index==0, index==recipes.length-1)),
       ],
     );
   }
 }
 
-
-
 class RecipeTile extends StatelessWidget {
   final Recipe recipe;
+  final bool isFirst;
+  final bool isLast;
 
-  RecipeTile(this.recipe);
+  RecipeTile(this.recipe, this.isFirst, this.isLast);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (location) {
-        showMenu(
-          //TODO RecipeTile: use CommandPopUpMenu
-          position: RelativeRect.fromLTRB(
-              location.localPosition.dx, location.globalPosition.dy, 100, 100),
-          context: context,
-          items: [
-            PopupMenuItem(
-              child: Text('${recipe.name}:'),
-              enabled: false,
-            ),
-            if (Provider.of<HeaterMeterService>(context, listen: false)
-                    .isConnected &&
-                recipe.temperatureSensors.isNotEmpty)
-              PopupMenuItem(
-                  child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text('Start cooking'),
-                leading: Icon(Icons.fastfood),
-                onTap: () {
-                  closeMenuOrDialog(context);
-                  //TODO
-                },
-              )),
-            PopupMenuItem(
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text('Edit'),
-                leading: Icon(Icons.edit),
-                onTap: () {
-                  closeMenuOrDialog(context);
+        CommandPopupMenu(
+            context,
+            [
+              Command.dynamic(
+                name: () => 'Start cooking',
+                icon: () => Icons.fastfood,
+                visible: () =>
+                    Provider.of<HeaterMeterService>(context, listen: false)
+                        .isConnected &&
+                    recipe.temperatureSensors.isNotEmpty,
+                action: () {
                   //TODO
                 },
               ),
-            ),
-            PopupMenuItem(
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text('View'),
-                leading: Icon(Icons.table_rows),
-                onTap: () {
-                  closeMenuOrDialog(context);
+              Command(
+                name: 'Edit',
+                icon: Icons.edit,
+                action: () {
                   //TODO
                 },
               ),
-            ),
-            PopupMenuItem(
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text('Move up'),
-                leading: Icon(Icons.arrow_upward),
-                onTap: () {
-                  closeMenuOrDialog(context);
-                  Provider.of<RecipeService>(context, listen: false)
-                      .moveUp(recipe);
+              Command(
+                name: 'View',
+                icon: Icons.table_rows,
+                action: () {
+                  //TODO
                 },
               ),
-            ),
-            PopupMenuItem(
-              child: ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text('Move down'),
-                leading: Icon(Icons.arrow_downward),
-                onTap: () {
-                  closeMenuOrDialog(context);
-                  Provider.of<RecipeService>(context, listen: false)
-                      .moveDown(recipe);
+              Command.dynamic(
+                name: ()=>'Move up',
+                icon: ()=> Icons.arrow_upward,
+                visible: ()=> !isFirst,
+                action: () {
+                  context.read<RecipeService>().moveUp(recipe);
                 },
               ),
-            ),
-            PopupMenuItem(
-                child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text('Delete'),
-              leading: Icon(Icons.delete),
-              onTap: () {
-                closeMenuOrDialog(context);
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return ConformDeletionDialog(recipe);
-                  },
-                );
-              },
-            ))
-          ],
-        );
+              Command.dynamic(
+                name: () =>'Move down',
+                icon: () =>Icons.arrow_downward,
+                visible: () => !isLast,
+                action: () {
+                  context.read<RecipeService>().moveDown(recipe);
+                },
+              ),
+              Command(
+                name: 'Delete',
+                icon: Icons.delete,
+                action: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ConformDeletionDialog(recipe);
+                    },
+                  );
+                },
+              ),
+            ],
+            position: calculatePopUpMenuPosition(context, location),
+            title: recipe.name);
       },
       child: ListTile(
         title: Text(recipe.name),
       ),
     );
+  }
+
+  RelativeRect calculatePopUpMenuPosition(
+      BuildContext context, TapDownDetails location) {
+    Size screenSize = MediaQuery.of(context).size;
+    RelativeRect position = RelativeRect.fromLTRB(location.localPosition.dx,
+        location.globalPosition.dy, screenSize.width, screenSize.height);
+    return position;
   }
 }
 
