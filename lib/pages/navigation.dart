@@ -1,4 +1,3 @@
-
 import 'package:flutter/widgets.dart';
 import 'package:my_bbq/pages/recipe.dart';
 import 'package:provider/provider.dart';
@@ -12,12 +11,12 @@ class Navigation extends ChangeNotifier {
     return _singleton;
   }
 
-  Navigation._(): _currentPage=RecipeListPage(); //ConnectPage();
+  Navigation._() : _currentPage = RecipeListPage(); //ConnectPage();
 
-  Widget get currentPage=> _currentPage;
+  Widget get currentPage => _currentPage;
 
   set currentPage(Widget newCurrentPage) {
-    _currentPage=newCurrentPage;
+    _currentPage = newCurrentPage;
     notifyListeners();
   }
 }

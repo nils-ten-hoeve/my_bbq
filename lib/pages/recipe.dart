@@ -4,7 +4,8 @@ import 'package:my_bbq/domain/heater_meter.dart';
 import 'package:my_bbq/domain/recipe.dart';
 import 'package:my_bbq/theme/extended_theme.dart';
 import 'package:my_bbq/widgets/command.dart';
-import 'package:my_bbq/widgets/toolbar.dart';
+import 'package:my_bbq/widgets/command_popupmenu.dart';
+import 'package:my_bbq/widgets/command_toolbar.dart';
 import 'package:provider/provider.dart';
 
 class RecipeListPage extends StatelessWidget {
@@ -51,7 +52,8 @@ class RecipeListPage extends StatelessWidget {
             //TODO without: gives RenderBox was not laid out    with: does not work with many item lists (scrolling)
             separatorBuilder: (context, index) => Divider(),
             itemCount: recipes.length,
-            itemBuilder: (context, index) => RecipeTile(recipes[index],index==0, index==recipes.length-1)),
+            itemBuilder: (context, index) => RecipeTile(
+                recipes[index], index == 0, index == recipes.length - 1)),
       ],
     );
   }
@@ -97,16 +99,16 @@ class RecipeTile extends StatelessWidget {
                 },
               ),
               Command.dynamic(
-                name: ()=>'Move up',
-                icon: ()=> Icons.arrow_upward,
-                visible: ()=> !isFirst,
+                name: () => 'Move up',
+                icon: () => Icons.arrow_upward,
+                visible: () => !isFirst,
                 action: () {
                   context.read<RecipeService>().moveUp(recipe);
                 },
               ),
               Command.dynamic(
-                name: () =>'Move down',
-                icon: () =>Icons.arrow_downward,
+                name: () => 'Move down',
+                icon: () => Icons.arrow_downward,
                 visible: () => !isLast,
                 action: () {
                   context.read<RecipeService>().moveDown(recipe);

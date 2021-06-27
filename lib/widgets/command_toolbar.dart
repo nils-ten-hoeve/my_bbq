@@ -4,8 +4,8 @@ import 'package:my_bbq/theme/extended_theme.dart';
 import 'package:overflow_view/overflow_view.dart';
 
 import 'command.dart';
-
-
+import 'command_icon_text.dart';
+import 'command_popupmenu.dart';
 
 class CommandToolbar extends StatelessWidget {
   final List<Command> commands;
@@ -21,7 +21,8 @@ class CommandToolbar extends StatelessWidget {
     return Visibility(
         visible: visibleCommands.isNotEmpty,
         child: Container(
-            padding: EdgeInsets.fromLTRB(ExtendedTheme.spacing, 0, ExtendedTheme.spacing, 0),
+            padding: EdgeInsets.fromLTRB(
+                ExtendedTheme.spacing, 0, ExtendedTheme.spacing, 0),
             color: backGroundColor,
             height: ExtendedTheme.minItemHeight,
             child: Align(
@@ -50,9 +51,7 @@ class CommandToolBarMoreButton extends StatelessWidget {
     Color foreGroundColor = Theme.of(context).textTheme.bodyText1!.color!;
 
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: ExtendedTheme.minItemHeight
-      ),
+      constraints: BoxConstraints(minHeight: ExtendedTheme.minItemHeight),
       child: TextButton(
         key: buttonKey,
         style: TextButton.styleFrom(
@@ -88,109 +87,7 @@ class CommandToolBarMoreButton extends StatelessWidget {
   }
 }
 
-final iconPlaceholder = Icon(
-  Icons.adjust,
-  color: Colors.transparent,
-);
 
-Icon? createCommandIcon(Command command, Color foreGroundColor,
-    {bool isIconPlaceholder = false}) {
-  IconData? icon = command.icon;
-  if (icon == null) {
-    if (isIconPlaceholder) {
-      return iconPlaceholder;
-    } else {
-      return null;
-    }
-  } else {
-    return Icon(
-      command.icon,
-      color: foreGroundColor,
-    );
-  }
-}
-
-class CommandIconAndText extends StatelessWidget {
-  final Command command;
-
-  CommandIconAndText(this.command);
-
-  @override
-  Widget build(BuildContext context) {
-    Color foreGroundColor = Theme.of(context).textTheme.bodyText1!.color!;
-    return Row(children: [
-      createCommandIcon(command, foreGroundColor, isIconPlaceholder: true)!,
-      SizedBox(
-        width: 10,
-      ),
-      Text(command.name, style: TextStyle(color: foreGroundColor))
-    ]);
-  }
-}
-
-class CommandPopupMenu {
-  final List<Command> commands;
-
-  CommandPopupMenu(
-    BuildContext context,
-    this.commands, {
-    String? title,
-    Command? selectedCommand,
-    RelativeRect? position,
-    double? elevation,
-    ShapeBorder? shape,
-    Color? color,
-    bool useRootNavigator = false,
-  }) {
-    if (position == null) {
-      position = positionInMiddleOfScreen(context);
-    }
-
-    List<Command> visibleCommands =
-        commands.where((command) => command.visible).toList();
-
-    if (visibleCommands.isNotEmpty) {
-      showMenu<Command>(
-              context: context,
-              position: position,
-              initialValue: selectedCommand,
-              elevation: elevation,
-              color: color,
-              shape: (shape == null) ? ExtendedTheme.roundedRectangleBorder : shape,
-              items: createItems(context, title, visibleCommands))
-          .then((command) => command!.action());
-    }
-  }
-
-  RelativeRect positionInMiddleOfScreen(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double assumedPopUpWidth = 220;
-    return RelativeRect.fromLTRB(
-        (screenWidth - assumedPopUpWidth) / 2, 100, screenWidth, 100);
-  }
-
-  List<PopupMenuItem<Command>> createItems(
-      BuildContext context, String? title, List<Command> visibleCommands) {
-    return [
-      if (title != null && title.isNotEmpty) createTitle(context, title),
-      ...visibleCommands
-          .map((command) => CommandPopupMenuItem(command))
-          .toList()
-    ];
-  }
-
-  PopupMenuItem<Command> createTitle(BuildContext context, String title) =>
-      PopupMenuItem(
-        child: Text(title),
-        enabled: false,
-        textStyle: Theme.of(context).textTheme.headline6,
-      );
-}
-
-class CommandPopupMenuItem extends PopupMenuItem<Command> {
-  CommandPopupMenuItem(Command command)
-      : super(value: command, child: CommandIconAndText(command));
-}
 
 class CommandToolbarButton extends StatelessWidget {
   final Command command;
@@ -200,9 +97,8 @@ class CommandToolbarButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color foreGroundColor = Theme.of(context).textTheme.bodyText1!.color!;
-
-    Icon? icon = createCommandIcon(command, foreGroundColor);
-    if (icon == null) {
+    IconData? iconData= command.icon;
+    if (iconData==null) {
       return ConstrainedBox(
         constraints: BoxConstraints(
           minHeight: ExtendedTheme.minItemHeight,
@@ -211,14 +107,17 @@ class CommandToolbarButton extends StatelessWidget {
           child: Text(
             command.name,
           ),
-          style: Theme.of(context).textButtonTheme.style!.copyWith(foregroundColor: MaterialStateProperty.all<Color>(foreGroundColor)) ,
+          style: Theme.of(context).textButtonTheme.style!.copyWith(
+              foregroundColor:
+                  MaterialStateProperty.all<Color>(foreGroundColor)),
           onPressed: () {
             command.action();
           },
         ),
       );
     } else {
-      final buttonStyle = TextButton.styleFrom(primary: foreGroundColor,
+      final buttonStyle = TextButton.styleFrom(
+          primary: foreGroundColor,
           padding: EdgeInsets.all(20),
           shape: ExtendedTheme.roundedRectangleBorder);
       return ConstrainedBox(
@@ -230,7 +129,7 @@ class CommandToolbarButton extends StatelessWidget {
           label: Text(
             command.name,
           ),
-          icon: icon,
+          icon: CommandIcon(command,foreGroundColor),
           onPressed: () {
             command.action();
           },
@@ -239,5 +138,3 @@ class CommandToolbarButton extends StatelessWidget {
     }
   }
 }
-
-
