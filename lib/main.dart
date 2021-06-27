@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_bbq/pages/connect.dart';
 import 'package:my_bbq/pages/navigation.dart';
 import 'package:my_bbq/pages/recipe.dart';
+import 'package:my_bbq/theme/extended_theme.dart';
 import 'package:provider/provider.dart';
 
 import 'domain/heater_meter.dart';
@@ -25,8 +26,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primarySwatch: Colors.blue, brightness: Brightness.dark),
-      //home: ConnectPage(),
+      //theme: ThemeData(primarySwatch: Colors.blue, brightness: Brightness.dark),
+      theme: ExtendedTheme.dark(Colors.blue),
       home: MainScaffold(),
     );
   }

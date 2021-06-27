@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_bbq/domain/heater_meter.dart';
 import 'package:my_bbq/domain/recipe.dart';
+import 'package:my_bbq/theme/extended_theme.dart';
 import 'package:my_bbq/widgets/command.dart';
 import 'package:my_bbq/widgets/toolbar.dart';
 import 'package:provider/provider.dart';
@@ -37,14 +38,13 @@ class RecipeListPage extends StatelessWidget {
                 //TODO
               }),
           //TODO remove after testing
-          for (int i = 0; i <= 10; i++)
-            Command(
-                name: 'Longer text $i',
-                icon: (i % 2 != 0) ? null : Icons.add,
-                //visible: (i % 3 != 0),
-                action: () {
-                  //TODO
-                }),
+          // for (int i = 0; i <= 10; i++)
+          //   Command(
+          //       name: 'Longer text $i',
+          //       icon: (i % 2 != 0) ? null : Icons.add,
+          //       //visible: (i % 3 != 0),
+          //       action: () {
+          //       }),
         ]),
         ListView.separated(
             shrinkWrap: true,
@@ -168,7 +168,7 @@ class ConformDeletionDialog extends StatelessWidget {
     return AlertDialog(
       title: Text("Delete"),
       content: Text("Are you sure you want to delete:\n${recipe.name}?"),
-      shape: roundedShape,
+      shape: ExtendedTheme.roundedRectangleBorder,
       actions: [
         cancelButton,
         deleteButton,

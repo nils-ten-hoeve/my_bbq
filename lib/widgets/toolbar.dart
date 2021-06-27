@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:my_bbq/theme/extended_theme.dart';
 import 'package:overflow_view/overflow_view.dart';
 
 import 'command.dart';
 
-const itemHeight=50.0;
-const spacing=20.0;
-const rounding=20.0;
+
 
 class CommandToolbar extends StatelessWidget {
   final List<Command> commands;
@@ -22,13 +21,13 @@ class CommandToolbar extends StatelessWidget {
     return Visibility(
         visible: visibleCommands.isNotEmpty,
         child: Container(
-            padding: EdgeInsets.fromLTRB(spacing, 0, spacing, 0),
+            padding: EdgeInsets.fromLTRB(ExtendedTheme.spacing, 0, ExtendedTheme.spacing, 0),
             color: backGroundColor,
-            height: itemHeight,
+            height: ExtendedTheme.minItemHeight,
             child: Align(
               alignment: Alignment.centerRight,
               child: OverflowView.flexible(
-                  spacing: spacing,
+                  spacing: ExtendedTheme.spacing,
                   children: visibleCommands
                       .map((command) => CommandToolbarButton(command))
                       .toList(),
@@ -52,13 +51,13 @@ class CommandToolBarMoreButton extends StatelessWidget {
 
     return ConstrainedBox(
       constraints: BoxConstraints(
-        minHeight: itemHeight
+        minHeight: ExtendedTheme.minItemHeight
       ),
       child: TextButton(
         key: buttonKey,
         style: TextButton.styleFrom(
             primary: foreGroundColor,
-            shape: roundedShape),
+            shape: ExtendedTheme.roundedRectangleBorder),
         child: Icon(Icons.more_horiz),
         onPressed: () {
           CommandPopupMenu(
@@ -67,8 +66,8 @@ class CommandToolBarMoreButton extends StatelessWidget {
             position: calculatePopUpMenuPosition(),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(rounding),
-                    bottomRight: Radius.circular(rounding))),
+                    bottomLeft: ExtendedTheme.radius,
+                    bottomRight: ExtendedTheme.radius)),
           );
         },
       ),
@@ -157,7 +156,7 @@ class CommandPopupMenu {
               initialValue: selectedCommand,
               elevation: elevation,
               color: color,
-              shape: (shape == null) ? roundedShape : shape,
+              shape: (shape == null) ? ExtendedTheme.roundedRectangleBorder : shape,
               items: createItems(context, title, visibleCommands))
           .then((command) => command!.action());
     }
@@ -206,16 +205,13 @@ class CommandToolbarButton extends StatelessWidget {
     if (icon == null) {
       return ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: itemHeight,
+          minHeight: ExtendedTheme.minItemHeight,
         ),
         child: TextButton(
           child: Text(
             command.name,
           ),
-          style: TextButton.styleFrom(
-              padding: EdgeInsets.all(20),
-              primary: foreGroundColor,
-              shape: roundedShape),
+          style: Theme.of(context).textButtonTheme.style!.copyWith(foregroundColor: MaterialStateProperty.all<Color>(foreGroundColor)) ,
           onPressed: () {
             command.action();
           },
@@ -224,10 +220,10 @@ class CommandToolbarButton extends StatelessWidget {
     } else {
       final buttonStyle = TextButton.styleFrom(primary: foreGroundColor,
           padding: EdgeInsets.all(20),
-          shape: roundedShape);
+          shape: ExtendedTheme.roundedRectangleBorder);
       return ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: itemHeight,
+          minHeight: ExtendedTheme.minItemHeight,
         ),
         child: TextButton.icon(
           style: buttonStyle,
@@ -245,5 +241,3 @@ class CommandToolbarButton extends StatelessWidget {
 }
 
 
-const roundedShape=RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(rounding)));
