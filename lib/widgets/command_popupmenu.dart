@@ -73,3 +73,5 @@ class CommandPopupMenuItem extends PopupMenuItem<Command> {
   CommandPopupMenuItem(Command command)
       : super(value: command, child: CommandIconAndText(command));
 }
+
+

@@ -129,7 +129,7 @@ class CommandToolbarButton extends StatelessWidget {
           label: Text(
             command.name,
           ),
-          icon: CommandIcon(command,foreGroundColor),
+          icon: CommandIcon(command),
           onPressed: () {
             command.action();
           },
