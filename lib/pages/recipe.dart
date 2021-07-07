@@ -2,11 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_bbq/domain/heater_meter.dart';
 import 'package:my_bbq/domain/recipe.dart';
-import 'package:my_bbq/theme/extended_theme.dart';
-import 'package:my_bbq/widgets/command.dart';
-import 'package:my_bbq/widgets/command_popupmenu.dart';
-import 'package:my_bbq/widgets/command_toolbar.dart';
 import 'package:provider/provider.dart';
+import 'package:user_command/user_command.dart';
 
 class RecipeListPage extends StatelessWidget {
   @override
@@ -38,14 +35,6 @@ class RecipeListPage extends StatelessWidget {
               action: () {
                 //TODO
               }),
-          //TODO remove after testing
-          // for (int i = 0; i <= 10; i++)
-          //   Command(
-          //       name: 'Longer text $i',
-          //       icon: (i % 2 != 0) ? null : Icons.add,
-          //       //visible: (i % 3 != 0),
-          //       action: () {
-          //       }),
         ]),
         ListView.separated(
             shrinkWrap: true,
@@ -68,68 +57,64 @@ class RecipeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (location) {
-        CommandPopupMenu(
-            context,
-            [
-              Command.dynamic(
-                name: () => 'Start cooking',
-                icon: () => Icons.fastfood,
-                visible: () =>
-                    Provider.of<HeaterMeterService>(context, listen: false)
-                        .isConnected &&
-                    recipe.temperatureSensors.isNotEmpty,
-                action: () {
-                  //TODO
-                },
-              ),
-              Command(
-                name: 'Edit',
-                icon: Icons.edit,
-                action: () {
-                  //TODO
-                },
-              ),
-              Command(
-                name: 'View',
-                icon: Icons.table_rows,
-                action: () {
-                  //TODO
-                },
-              ),
-              Command.dynamic(
-                name: () => 'Move up',
-                icon: () => Icons.arrow_upward,
-                visible: () => !isFirst,
-                action: () {
-                  context.read<RecipeService>().moveUp(recipe);
-                },
-              ),
-              Command.dynamic(
-                name: () => 'Move down',
-                icon: () => Icons.arrow_downward,
-                visible: () => !isLast,
-                action: () {
-                  context.read<RecipeService>().moveDown(recipe);
-                },
-              ),
-              Command(
-                name: 'Delete',
-                icon: Icons.delete,
-                action: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return ConformDeletionDialog(recipe);
-                    },
-                  );
-                },
-              ),
-            ],
-            position: calculatePopUpMenuPosition(context, location),
-            title: recipe.name);
-      },
+    return CommandPopupMenuWrapper(
+      popupMenuTitle: recipe.name,
+      commands: [
+        Command.dynamic(
+          name: () => 'Start cooking',
+          icon: () => Icons.fastfood,
+          visible: () =>
+              Provider.of<HeaterMeterService>(context, listen: false)
+                  .isConnected &&
+              recipe.temperatureSensors.isNotEmpty,
+          action: () {
+            //TODO
+          },
+        ),
+        Command(
+          name: 'Edit',
+          icon: Icons.edit,
+          action: () {
+            //TODO
+          },
+        ),
+        Command(
+          name: 'View',
+          icon: Icons.table_rows,
+          action: () {
+            //TODO
+          },
+        ),
+        Command.dynamic(
+          name: () => 'Move up',
+          icon: () => Icons.arrow_upward,
+          visible: () => !isFirst,
+          action: () {
+            context.read<RecipeService>().moveUp(recipe);
+          },
+        ),
+        Command.dynamic(
+          name: () => 'Move down',
+          icon: () => Icons.arrow_downward,
+          visible: () => !isLast,
+          action: () {
+            context.read<RecipeService>().moveDown(recipe);
+          },
+        ),
+        Command(
+          name: 'Delete',
+          icon: Icons.delete,
+          action: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return ConformDeletionDialog(recipe);
+              },
+            );
+          },
+        ),
+      ],
+
       child: ListTile(
         title: Text(recipe.name),
       ),
@@ -170,7 +155,7 @@ class ConformDeletionDialog extends StatelessWidget {
     return AlertDialog(
       title: Text("Delete"),
       content: Text("Are you sure you want to delete:\n${recipe.name}?"),
-      shape: ExtendedTheme.roundedRectangleBorder,
+      shape: CommandStyle.roundedRectangleBorder,
       actions: [
         cancelButton,
         deleteButton,

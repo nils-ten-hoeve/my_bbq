@@ -103,7 +103,7 @@ packages:
     source: hosted
     version: "1.0.0"
   overflow_view:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: overflow_view
       url: "https://pub.dartlang.org"
@@ -198,6 +198,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
+  user_command:
+    dependency: "direct main"
+    description:
+      name: user_command
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   value_layout_builder:
     dependency: transitive
     description:
