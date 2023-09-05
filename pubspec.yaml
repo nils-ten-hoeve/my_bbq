@@ -15,7 +15,7 @@ dependencies:
   collection: ^1.15.0
   syncfusion_flutter_charts: ^19.1.69
   provider: ^5.0.0
-  user_command: ^0.0.1
+  user_command: ^0.0.2
 
 
 dev_dependencies:

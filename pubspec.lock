@@ -204,7 +204,7 @@ packages:
       name: user_command
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.2"
   value_layout_builder:
     dependency: transitive
     description:
